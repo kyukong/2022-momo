@@ -21,6 +21,7 @@ import com.woowacourse.momo.group.service.dto.response.GroupIdResponse;
 import com.woowacourse.momo.group.service.dto.response.GroupResponseAssembler;
 import com.woowacourse.momo.member.domain.Member;
 import com.woowacourse.momo.member.service.MemberFindService;
+import com.woowacourse.momo.storage.service.GroupImageService;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -29,6 +30,7 @@ public class GroupManageService {
 
     private final MemberFindService memberFindService;
     private final GroupFindService groupFindService;
+    private final GroupImageService groupImageService;
     private final GroupRepository groupRepository;
 
     @Transactional
@@ -37,6 +39,7 @@ public class GroupManageService {
         Group group = new Group(host, request.getCapacity(), request.getCalendar(), request.getName(),
                 request.getCategory(), request.getLocation(), request.getDescription());
         Group savedGroup = groupRepository.save(group);
+        groupImageService.init(group);
 
         return GroupResponseAssembler.groupIdResponse(savedGroup);
     }
