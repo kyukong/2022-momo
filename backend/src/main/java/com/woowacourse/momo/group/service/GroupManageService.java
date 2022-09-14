@@ -72,6 +72,7 @@ public class GroupManageService {
         ifMemberIsHost(hostId, groupId, (host, group) -> {
             group.validateGroupIsDeletable();
             groupRepository.deleteById(groupId);
+            groupImageService.delete(group);
         });
     }
 

@@ -28,6 +28,8 @@ import com.woowacourse.momo.group.exception.GroupException;
 import com.woowacourse.momo.group.service.dto.request.GroupRequest;
 import com.woowacourse.momo.member.domain.Member;
 import com.woowacourse.momo.member.domain.MemberRepository;
+import com.woowacourse.momo.storage.domain.GroupImage;
+import com.woowacourse.momo.storage.domain.GroupImageRepository;
 
 @Transactional
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -37,6 +39,7 @@ class GroupManageServiceTest {
 
     private final GroupManageService groupManageService;
     private final GroupSearchService groupSearchService;
+    private final GroupImageRepository groupImageRepository;
     private final GroupRepository groupRepository;
     private final MemberRepository memberRepository;
     private final ParticipateService participateService;
@@ -213,14 +216,20 @@ class GroupManageServiceTest {
     @DisplayName("식별자를 통해 모임을 삭제한다")
     @Test
     void delete() {
-        long groupId = group.getId();
         long hostId = host.getId();
+        GroupRequest request = MOMO_STUDY.toRequest();
+        long groupId = groupManageService.create(host.getId(), request)
+                .getGroupId();
 
         groupManageService.delete(hostId, groupId);
+        Optional<GroupImage> groupImage = groupImageRepository.findByGroup(group);
 
-        assertThatThrownBy(() -> groupSearchService.findGroup(groupId))
-                .isInstanceOf(GroupException.class)
-                .hasMessage("존재하지 않는 모임입니다.");
+        assertAll(
+                () -> assertThat(groupImage).isEmpty(),
+                () -> assertThatThrownBy(() -> groupSearchService.findGroup(groupId))
+                        .isInstanceOf(GroupException.class)
+                        .hasMessage("존재하지 않는 모임입니다.")
+        );
     }
 
     @DisplayName("주최자가 아닌 사용자가 모임을 삭제할 경우 예외가 발생한다")
