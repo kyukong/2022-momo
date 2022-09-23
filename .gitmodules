@@ -1,3 +1,8 @@
 [submodule "frontend/fe-security"]
 	path = frontend/fe-security
 	url = https://github.com/2022-momo/fe-security.git
+
+[submodule "backend/src/main/resources/security"]
+	path = backend/src/main/resources/security
+	url = https://github.com/2022-momo/security.git
+	branch = main
